@@ -56,17 +56,17 @@ output "ecs_cluster_arn" {
 # Jenkins Outputs
 output "jenkins_master_public_ip" {
   description = "Public IP address of the Jenkins master instance"
-  value       = aws_eip.jenkins_master.public_ip
+  value       = aws_eip.jenkins_master[*].public_ip #because there is the count on the jenkins server is 2 we need to add [*] output all IPs at once using the splat operator
 }
 
 output "jenkins_master_instance_id" {
   description = "Instance ID of the Jenkins master"
-  value       = aws_instance.jenkins_master.id
+  value       = aws_instance.jenkins_master[*].id #because there is the count on the jenkins server is 2 we need to add [*] output all IDs at once using the splat operator
 }
 
 output "jenkins_url" {
   description = "URL to access Jenkins"
-  value       = "http://${aws_eip.jenkins_master.public_ip}:8080"
+  value       = "http://${aws_eip.jenkins_master[0].public_ip}:8080"  #interpolation needs one specific value, not a whole list
 }
 
 # Security Group Outputs

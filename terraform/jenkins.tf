@@ -19,6 +19,7 @@ resource "aws_instance" "jenkins_master" {
   ami           = data.aws_ami.amazon_linux_2023.id
   instance_type = "t3.small"
   key_name      = "1_percent_keypair517"
+  count         = 2
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   subnet_id              = aws_subnet.public_subnet[0].id
@@ -30,7 +31,7 @@ resource "aws_instance" "jenkins_master" {
   }
 
   tags = {
-    Name        = "Jenkins Master"
+    Name        = "${var.project_name}-jenkins-master-${count.index + 1}"
     Environment = var.environment
     Project     = var.project_name
   }
@@ -38,11 +39,33 @@ resource "aws_instance" "jenkins_master" {
 
 # Elastic IP for Jenkins Master
 resource "aws_eip" "jenkins_master" {
-  instance = aws_instance.jenkins_master.id
+  instance = aws_instance.jenkins_master[count.index].id 
   domain   = "vpc"
+  count = 2
 
   tags = {
-    Name        = "${var.project_name}-jenkins-master-eip"
+    Name        = "${var.project_name}-jenkins-master-eip-${count.index + 1}"
     Environment = var.environment
   }
 } 
+
+resource "aws_instance" "ansible_master" {
+  ami           = data.aws_ami.amazon_linux_2023.id
+  instance_type = "t3.small"
+  key_name      = "1_percent_keypair517"
+
+  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
+  subnet_id              = aws_subnet.public_subnet[0].id
+
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+    encrypted   = true
+  }
+
+  tags = {
+    Name        = "ansible Master"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
