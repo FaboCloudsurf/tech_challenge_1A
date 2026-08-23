@@ -1,0 +1,110 @@
+---
+- name: Install Docker and set up Jenkins
+  hosts: webservers
+  become: true    # runs commands as sudo
+
+
+  tasks:
+    # Update/upgrade all packages, equivalent to sudo dnf update && sudo dnf upgrade
+    - name: Update all packages               # Label shown in the playbook run output
+      dnf:                                    # Use Ansible's built-in module for dnf (Amazon Linux/RHEL package manager)
+        name: "*"                             # Target ALL installed packages (wildcard), not just one specific package
+        state: latest
+
+     # Installs Docker itself
+    - name: Install Docker               # Label shown in the playbook run output
+      dnf:                               # Use Ansible's dnf module (Amazon Linux/RHEL package manager)
+        name: docker                     # Target specifically the "docker" package, not everything
+        state: present                   # Desired outcome: just make sure it's installed (any version is fine)
+
+    # Starts Docker now, and enables it so it auto-starts on future reboots
+    - name: Start and enable Docker service   # Label shown in the playbook run output
+      systemd:                                # Use Ansible's module for controlling services (systemd)
+        name: docker                          # Target the docker service specifically
+        state: started                        # Make sure it's running right now
+        enabled: true                         # Also make sure it auto-starts on future reboots
+
+    # Adds ec2-user to the docker group so it can run docker commands without sudo
+    - name: Add ec2-user to docker group  # Label shown in the playbook run output
+      user:                               # Use Ansible's module for managing user accounts
+        name: ec2-user                    # Target this specific existing user
+        groups: docker                    # The group to add this user to
+        append: true                      # Add to this group WITHOUT removing them from any other groups they're already in
+
+    # Grabs the docker group's numeric ID, needed for the --group-add flag below
+    - name: Get docker group ID           # Label shown in the playbook run output
+      shell: "getent group docker | cut -d: -f3"   # Raw shell command: look up the docker group's numeric ID and extract just the number
+      register: docker_gid                # Save the command's output into a variable named "docker_gid" for later use
+      changed_when: false                 # Tell Ansible this task never counts as "changing" anything (it's just reading info, not modifying the system)
+
+    # Makes sure the host directory exists and is owned by UID 1000, matching Jenkins' internal user - (added after run fail due to permissions)
+    # without this, Jenkins can't write its own config and fails to start (permission denied).
+    - name: Ensure Jenkins home directory has correct ownership
+      file:
+        path: /var/jenkins_home
+        state: directory
+        owner: "1000"
+        group: "1000"
+        mode: '0755'
+
+    # Runs the Jenkins container itself, mirroring the manual docker run command. added ( --restart unless-stopped)
+    - name: Run Jenkins container
+      command: >
+        docker run -d
+        --name jenkins
+        --restart unless-stopped             
+        -p 8080:8080
+        -v /var/jenkins_home:/var/jenkins_home
+        -v /var/run/docker.sock:/var/run/docker.sock
+        --group-add {{ docker_gid.stdout }}
+        jenkins/jenkins:lts
+      args:
+        creates: /var/jenkins_home/config.xml   # skip this task if Jenkins already ran before (idempotency)
+
+    # Installs the docker CLI inside the Jenkins container itself, so pipelines can build/push images
+    - name: Install Docker CLI inside Jenkins container
+      shell: |
+        docker exec -u root jenkins bash -c "apt-get update && apt-get install -y docker.io"
+
+    # Restarts Jenkins so the newly installed docker CLI takes effect cleanly
+    - name: Restart Jenkins container
+      command: docker restart jenkins
+
+
+##//  THIS FILE IS ONLY TO SHOW HOW THE YAML FILE IS CREATED FOR ANSIBLE.THIS FILE REAL LOCATION IS IN THE ANSIBLE CONTROL SERVER WITH INVENTORY.INI
+ 
+
+# name: Update all packages          # Human-readable label for this task, shown in the playbook run output
+# dnf:                               # Use Ansible's built-in module for dnf (Amazon Linux/RHEL package manager)
+# name: "*"                        # Target ALL installed packages (wildcard), not just one specific package
+# state: latest                    # Desired outcome: each package should be at its newest available version
+
+# - name: Install Docker               # Label shown in the playbook run output
+#       dnf:                               # Use Ansible's dnf module (Amazon Linux/RHEL package manager)
+#         name: docker                     # Target specifically the "docker" package, not everything
+#         state: present                   # Desired outcome: just make sure it's installed (any version is fine)
+
+#     - name: Start and enable Docker service   # Label shown in the playbook run output
+#       systemd:                                # Use Ansible's module for controlling services (systemd)
+#         name: docker                          # Target the docker service specifically
+#         state: started                        # Make sure it's running right now
+#         enabled: true                         # Also make sure it auto-starts on future reboots
+
+#     - name: Add ec2-user to docker group  # Label shown in the playbook run output
+#       user:                               # Use Ansible's module for managing user accounts
+#         name: ec2-user                    # Target this specific existing user
+#         groups: docker                    # The group to add this user to
+#         append: true                      # Add to this group WITHOUT removing them from any other groups they're already in
+
+#     - name: Get docker group ID           # Label shown in the playbook run output
+#       shell: getent group docker | cut -d: -f3   # Raw shell command: look up the docker group's numeric ID and extract just the number
+#       register: docker_gid                # Save the command's output into a variable named "docker_gid" for later use
+#       changed_when: false                 # Tell Ansible this task never counts as "changing" anything (it's just reading info, not modifying the system)
+
+
+#TWO WAYS TO RUN ANSIBLE COMMANDS
+
+# Ansible actually has two separate ways to do things: ad-hoc commands (what those two lines are) let you run a single command across all your target 
+# servers immediately, right from your terminal, with no file needed at all. Playbooks are for writing out a whole repeatable sequence of steps in a 
+# YAML file, meant to be run (and re-run) as a structured, saved process. Ad-hoc commands are basically Ansible's version of "just SSH into every 
+# server and run this one command," except it does it for you across all servers at once instead of one at a time.
