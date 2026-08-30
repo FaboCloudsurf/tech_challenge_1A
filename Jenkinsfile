@@ -8,8 +8,8 @@ pipeline {
 
 
         // ====> Replace with your own ECR repository URIs
-        FRONTEND_REPO               = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-challenge-frontend"
-        BACKEND_REPO                = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-challenge-backend"
+        ECR_FRONTEND               = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-challenge-frontend"
+        ECR_BACKEND                = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-challenge-backend"
         CLUSTER_NAME                = 'devops-challenge-cluster'
         FRONTEND_TASK_FAMILY        = 'devops-challenge-frontend'
         BACKEND_TASK_FAMILY         = 'devops-challenge-backend'
