@@ -13,7 +13,7 @@ pipeline {
         CLUSTER_NAME                = 'devops-challenge-cluster'
         FRONTEND_TASK_FAMILY        = 'devops-challenge-frontend'
         BACKEND_TASK_FAMILY         = 'devops-challenge-backend'
-        FRONTEND_SERVICE            = 'devops-challenge-frontend-service'
+        FRONTEND_SERVICE            = 'devops-challenge-frontend_service'
         BACKEND_SERVICE             = 'devops-challenge-backend-service'
         // Uses this build's unique number as the image tag, so every build is traceable to a specific image
         IMAGE_TAG                   = "${env.BUILD_NUMBER}"
