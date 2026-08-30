@@ -39,7 +39,7 @@ pipeline {
         // Stage 3 — Push images to ECR Authenticates Docker against ECR, then uploads both newly built images
         stage('Push images to ECR') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-cred']]) {
                     sh """
                         aws ecr get-login-password --region ${AWS_REGION} | \
                         docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
@@ -53,7 +53,7 @@ pipeline {
                 // Stage 4 — Register new ECS task definitions Creates a brand new task definition revision for each app, pointing at the freshly pushed image
         stage('Register new ECS task definitions') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-cred']]) {
                     script {
                         // --- Frontend: pull the current task def, swap in the new image, register it as a new revision ---
                         sh """
@@ -90,7 +90,7 @@ pipeline {
         // Stage 5 — Update ECS services Tells each ECS service to switch to the newest task definition revision (deploys the new image)
         stage('Update ECS services') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-cred']]) {
                     // Passing just the family name (no revision number) makes AWS automatically use the LATEST revision
                     sh """
                         aws ecs update-service --cluster ${CLUSTER_NAME} --service ${FRONTEND_SERVICE} \
