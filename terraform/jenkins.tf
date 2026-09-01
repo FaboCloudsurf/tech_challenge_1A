@@ -1,6 +1,6 @@
 # Data source for latest Amazon Linux 2023 AMI
 data "aws_ami" "amazon_linux_2023" {
-  most_recent = true
+  most_recent = true  #doesn't return a fixed AMI ID — it re-asks AWS "what's newest right now" every single time you run plan.
   owners      = ["amazon"]
 
   filter {
@@ -20,6 +20,10 @@ resource "aws_instance" "jenkins_master" {
   instance_type = "t3.small"
   key_name      = "1_percent_keypair517"
   count         = 2
+
+    lifecycle {
+    ignore_changes = [ami]  #pinned AMI, ignore drift to avoid forced replacement
+  }
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   subnet_id              = aws_subnet.public_subnet[0].id
@@ -53,6 +57,11 @@ resource "aws_instance" "ansible_master" {
   ami           = data.aws_ami.amazon_linux_2023.id
   instance_type = "t3.small"
   key_name      = "1_percent_keypair517"
+
+   lifecycle {
+    ignore_changes = [ami]  #pinned AMI, ignore drift to avoid forced replacement
+
+  }
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   subnet_id              = aws_subnet.public_subnet[0].id

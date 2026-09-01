@@ -143,6 +143,10 @@ resource "aws_ecs_service" "frontend_ecs_service" {
   desired_count   = var.desired_tasks
   launch_type     = "FARGATE" 
 
+  lifecycle {
+    ignore_changes = [task_definition]  #after that first creation, never touch this field again, no matter what AWS shows. From then on, only Jenkins decides which revision is running.
+  }
+
   network_configuration {
     security_groups  = [aws_security_group.frontend_sg.id]
     subnets          = aws_subnet.private_subnet[*].id
@@ -162,6 +166,8 @@ resource "aws_ecs_service" "frontend_ecs_service" {
     Environment = var.environment
     
   }
+
+  
 }
 
 #The instruction that says "keep desired_count copies of that blueprint running at all times." 
@@ -172,6 +178,11 @@ resource "aws_ecs_service" "backend_ecs_service" {
   task_definition = aws_ecs_task_definition.backend_ecs_task.arn
   desired_count   = var.desired_tasks
   launch_type     = "FARGATE" 
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+  
 
   network_configuration {
     security_groups  = [aws_security_group.backend_sg.id]

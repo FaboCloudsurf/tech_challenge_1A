@@ -34,7 +34,7 @@ output "backend_repository_url" {
 # ALB Outputs
 output "alb_dns_name" {
   description = "DNS name of the Application Load Balancer"
-  value       = aws_lb.main_alb.name
+  value       = aws_lb.main_alb.dns_name 
 }
 
 output "alb_zone_id" {
