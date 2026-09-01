@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:8080/'
+export const API_URL = 'http://devops-challenge-alb-1970167075.us-east-1.elb.amazonaws.com/api'
 export default API_URL
 
 // How your frontend actually reaches that API: Remember frontend/src/config.js, which sets 
