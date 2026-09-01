@@ -1,6 +1,7 @@
 export const API_URL = 'http://devops-challenge-alb-1970167075.us-east-1.elb.amazonaws.com/api'
 export default API_URL
 
+
 // How your frontend actually reaches that API: Remember frontend/src/config.js, which sets 
 // API_URL. Your React code uses that value inside a fetch() call, something like fetch(API_URL) — 
 // that's the actual line of JavaScript, running in the user's browser, that goes out and asks 
