@@ -101,7 +101,8 @@ resource "aws_lb_listener_rule" "backend_listener" {
 
   condition {
     path_pattern {                # is the actual matching logic: "only apply this override if the request's URL path starts with /api/."
-      values = ["/api/*"]         # Match any path that begins with /api/
+      values = ["/api", "/api/*"]       # Match any path that begins with /api/
+         
     }
   }
 } 
