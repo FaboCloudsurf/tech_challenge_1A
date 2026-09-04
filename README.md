@@ -6,9 +6,20 @@ React + Express application deployed to AWS ECS Fargate, fully provisioned with 
 
 Below is the workflow showing how **Terraform** provisions resources inside **AWS** via **GitHub Actions**:
 
-<p align="center">
-  <img src="file:///Users/Admin/Library/Application%20Support/Claude/local-agent-mode-sessions/605506fb-1ebd-4fe3-9dd9-9acc3a16e9a3/a4c17d4d-821e-4c97-96f6-e32f6b3e9f6b/local_0fc1c525-5ea3-42f1-8fae-b1c498cb9092/outputs/architecture-diagram.svg" width="700">
-</p>
+## 📋 Infrastructure Requirements
+
+| Name | Version |
+| :--- | :--- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0.0 |
+
+## 📥 Inputs
+
+| Name | Description | Type | Default | Required |
+| :--- | :--- | :--- | :--- | :---: |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The target AWS Region. | `string` | `"us-east-1"` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | Deployment stage (dev/prod). | `string` | n/a | yes |
+
 
 
 ### 🛠️ Tech Stack & Tools
