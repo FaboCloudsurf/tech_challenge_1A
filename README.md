@@ -2,17 +2,14 @@
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
-<!-- AWS -->
-![](https://shields.io)
+## 📐 Architecture Overview
 
-<!-- Terraform -->
-![](https://shields.io)
+Below is the workflow showing how **Terraform** provisions resources inside **AWS** via **GitHub Actions**:
 
-<!-- GitHub Actions -->
-![](https://shields.io)
+<p align="center">
+  <img src="https://githubusercontent.com" alt="Architecture Diagram" width="700">
+</p>
 
-<!-- Docker -->
-![](https://shields.io)
 
 ### 🛠️ Tech Stack & Tools
 
