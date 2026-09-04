@@ -7,7 +7,7 @@ React + Express application deployed to AWS ECS Fargate, fully provisioned with 
 Below is the workflow showing how **Terraform** provisions resources inside **AWS** via **GitHub Actions**:
 
 <p align="center">
-  <img src="/Users/Admin/home/1percent/tech_challenge1/devops-code-challenge1A/devops-code-challenge1/README.svg" width="700">
+  <img src="file:///Users/Admin/Library/Application%20Support/Claude/local-agent-mode-sessions/605506fb-1ebd-4fe3-9dd9-9acc3a16e9a3/a4c17d4d-821e-4c97-96f6-e32f6b3e9f6b/local_0fc1c525-5ea3-42f1-8fae-b1c498cb9092/outputs/architecture-diagram.svg" width="700">
 </p>
 
 
