@@ -2,7 +2,17 @@
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
-Show Image Show Image Show Image Show Image Show Image
+<!-- AWS -->
+![](https://shields.io)
+
+<!-- Terraform -->
+![](https://shields.io)
+
+<!-- GitHub Actions -->
+![](https://shields.io)
+
+<!-- Docker -->
+![](https://shields.io)
 
 </div>
 Table of contents
