@@ -1,0 +1,75 @@
+name: GitOps CI/CD - Build, Push, Deploy to ECS
+
+# Trigger: run this workflow automatically every time code is pushed to the gitops branch
+on:
+  push:
+    branches:
+      - gitops
+
+# Shared values every step below can reuse — same idea as the environment{} block in your Jenkinsfile
+env:
+  AWS_REGION: us-east-1
+  ECR_FRONTEND: 730335577638.dkr.ecr.us-east-1.amazonaws.com/devops-challenge-frontend
+  ECR_BACKEND: 730335577638.dkr.ecr.us-east-1.amazonaws.com/devops-challenge-backend
+  CLUSTER_NAME: devops-challenge-cluster
+  FRONTEND_TASK_FAMILY: devops-challenge-frontend
+  BACKEND_TASK_FAMILY: devops-challenge-backend
+  FRONTEND_SERVICE: devops-challenge-frontend_service
+  BACKEND_SERVICE: devops-challenge-backend-service
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest    # GitHub spins up a fresh, temporary Ubuntu machine to run all the steps below
+
+    steps:
+      # Step 1: pull your repo's code onto that temporary machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: authenticate this machine to AWS using the two secrets you added earlier
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Step 3: log Docker in to ECR so it's allowed to push images there
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Step 4: build both images, tagging each with this run's unique build number
+      - name: Build Docker images
+        run: |
+          docker build -t $ECR_FRONTEND:${{ github.run_number }} ./frontend
+          docker build -t $ECR_BACKEND:${{ github.run_number }} ./backend
+
+      # Step 5: push both images to their ECR repositories
+      - name: Push images to ECR
+        run: |
+          docker push $ECR_FRONTEND:${{ github.run_number }}
+          docker push $ECR_BACKEND:${{ github.run_number }}
+
+      # Step 6: register a new frontend task definition revision pointing at the image just pushed
+      - name: Register new frontend task definition
+        run: |
+          aws ecs describe-task-definition --task-definition $FRONTEND_TASK_FAMILY --region $AWS_REGION --query taskDefinition > frontend-task-def.json
+          jq --arg IMAGE $ECR_FRONTEND:${{ github.run_number }} \
+            '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' \
+            frontend-task-def.json > frontend-task-def-new.json
+          aws ecs register-task-definition --region $AWS_REGION --cli-input-json file://frontend-task-def-new.json
+
+      # Step 7: same thing for backend
+      - name: Register new backend task definition
+        run: |
+          aws ecs describe-task-definition --task-definition $BACKEND_TASK_FAMILY --region $AWS_REGION --query taskDefinition > backend-task-def.json
+          jq --arg IMAGE $ECR_BACKEND:${{ github.run_number }} \
+            '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' \
+            backend-task-def.json > backend-task-def-new.json
+          aws ecs register-task-definition --region $AWS_REGION --cli-input-json file://backend-task-def-new.json
+
+      # Step 8: tell ECS to redeploy each service using its newest task definition revision
+      - name: Update ECS services
+        run: |
+          aws ecs update-service --cluster $CLUSTER_NAME --service $FRONTEND_SERVICE --task-definition $FRONTEND_TASK_FAMILY --region $AWS_REGION
+          aws ecs update-service --cluster $CLUSTER_NAME --service $BACKEND_SERVICE --task-definition $BACKEND_TASK_FAMILY --region $AWS_REGION
