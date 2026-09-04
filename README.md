@@ -60,7 +60,6 @@ Infrastructure is stopped between demo sessions to control cost. If the link abo
 
 Architecture
 
-Show Image
 
 Layer	Service	Details
 Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
