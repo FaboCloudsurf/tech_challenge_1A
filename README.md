@@ -14,6 +14,15 @@ React + Express application deployed to AWS ECS Fargate, fully provisioned with 
 <!-- Docker -->
 ![](https://shields.io)
 
+### 🛠️ Tech Stack & Tools
+
+<p align="left">
+  <a href="https://aws.amazon.com/" target="_blank" rel="noreferrer">
+    <img src="https://skillicons.dev" alt="My Tech Stack" />
+  </a>
+</p>
+
+
 </div>
 Table of contents
 Overview
