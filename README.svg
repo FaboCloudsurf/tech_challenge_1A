@@ -1,0 +1,83 @@
+<svg viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4a5568"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="720" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="600" y="35" text-anchor="middle" font-size="22" font-weight="700" fill="#1a202c">AWS ECS Fargate Deployment — Architecture</text>
+
+  <!-- Internet -->
+  <circle cx="600" cy="85" r="26" fill="#edf2f7" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="600" y="90" text-anchor="middle" font-size="13" fill="#2d3748">Internet</text>
+
+  <!-- VPC boundary -->
+  <rect x="60" y="140" width="1080" height="500" rx="10" fill="none" stroke="#a0aec0" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="80" y="165" font-size="14" font-weight="600" fill="#4a5568">VPC (10.0.0.0/16)</text>
+
+  <!-- ALB -->
+  <rect x="480" y="185" width="240" height="55" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="1.5"/>
+  <text x="600" y="208" text-anchor="middle" font-size="13" font-weight="600" fill="#2b6cb0">Application Load Balancer</text>
+  <text x="600" y="226" text-anchor="middle" font-size="11" fill="#2c5282">public subnets, 2 AZs</text>
+
+  <!-- Public subnets -->
+  <rect x="100" y="270" width="440" height="90" rx="8" fill="#f0fff4" stroke="#38a169" stroke-width="1.5"/>
+  <text x="120" y="292" font-size="12" font-weight="600" fill="#276749">Public Subnet (AZ-a)</text>
+  <text x="120" y="310" font-size="11" fill="#2f855a">Internet Gateway</text>
+
+  <rect x="660" y="270" width="440" height="90" rx="8" fill="#f0fff4" stroke="#38a169" stroke-width="1.5"/>
+  <text x="680" y="292" font-size="12" font-weight="600" fill="#276749">Public Subnet (AZ-b)</text>
+  <text x="680" y="310" font-size="11" fill="#2f855a">NAT Gateway</text>
+
+  <!-- Private subnets -->
+  <rect x="100" y="400" width="440" height="200" rx="8" fill="#fffaf0" stroke="#dd6b20" stroke-width="1.5"/>
+  <text x="120" y="422" font-size="12" font-weight="600" fill="#9c4221">Private Subnet (AZ-a)</text>
+
+  <rect x="660" y="400" width="440" height="200" rx="8" fill="#fffaf0" stroke="#dd6b20" stroke-width="1.5"/>
+  <text x="680" y="422" font-size="12" font-weight="600" fill="#9c4221">Private Subnet (AZ-b)</text>
+
+  <!-- ECS Fargate tasks -->
+  <rect x="130" y="440" width="180" height="65" rx="6" fill="#fff" stroke="#dd6b20" stroke-width="1.2"/>
+  <text x="220" y="463" text-anchor="middle" font-size="12" font-weight="600" fill="#7b341e">Frontend Task</text>
+  <text x="220" y="479" text-anchor="middle" font-size="10" fill="#7b341e">ECS Fargate · port 3000</text>
+  <text x="220" y="494" text-anchor="middle" font-size="10" fill="#7b341e">min 1 / max 4 · CPU 50%</text>
+
+  <rect x="330" y="440" width="180" height="65" rx="6" fill="#fff" stroke="#dd6b20" stroke-width="1.2"/>
+  <text x="420" y="463" text-anchor="middle" font-size="12" font-weight="600" fill="#7b341e">Backend Task</text>
+  <text x="420" y="479" text-anchor="middle" font-size="10" fill="#7b341e">ECS Fargate · port 8080</text>
+  <text x="420" y="494" text-anchor="middle" font-size="10" fill="#7b341e">min 1 / max 4 · CPU 50%</text>
+
+  <rect x="690" y="440" width="380" height="65" rx="6" fill="#fff" stroke="#dd6b20" stroke-width="1.2"/>
+  <text x="880" y="463" text-anchor="middle" font-size="12" font-weight="600" fill="#7b341e">CloudWatch Alarms</text>
+  <text x="880" y="479" text-anchor="middle" font-size="10" fill="#7b341e">AlarmHigh (scale-out) / AlarmLow (scale-in)</text>
+  <text x="880" y="494" text-anchor="middle" font-size="10" fill="#7b341e">drives Application Auto Scaling policy</text>
+
+  <!-- ECR -->
+  <rect x="690" y="530" width="380" height="55" rx="6" fill="#faf5ff" stroke="#805ad5" stroke-width="1.2"/>
+  <text x="880" y="552" text-anchor="middle" font-size="12" font-weight="600" fill="#553c9a">Amazon ECR</text>
+  <text x="880" y="570" text-anchor="middle" font-size="10" fill="#553c9a">frontend + backend image repositories</text>
+
+  <!-- CI/CD row -->
+  <rect x="100" y="660" width="230" height="45" rx="6" fill="#fefcbf" stroke="#d69e2e" stroke-width="1.2"/>
+  <text x="215" y="688" text-anchor="middle" font-size="12" font-weight="600" fill="#744210">Jenkins (EC2) — main branch</text>
+
+  <rect x="360" y="660" width="230" height="45" rx="6" fill="#fefcbf" stroke="#d69e2e" stroke-width="1.2"/>
+  <text x="475" y="688" text-anchor="middle" font-size="12" font-weight="600" fill="#744210">GitHub Actions — gitops branch</text>
+
+  <text x="700" y="688" font-size="11" fill="#4a5568">Both pipelines: build → push to ECR → register task def → update ECS service</text>
+
+  <!-- Arrows -->
+  <line x1="600" y1="111" x2="600" y2="183" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="600" y1="240" x2="320" y2="270" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="600" y1="240" x2="880" y2="270" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="220" y1="360" x2="220" y2="440" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="420" y1="360" x2="420" y2="440" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="880" y1="360" x2="880" y2="440" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="4,3"/>
+  <line x1="420" y1="472" x2="690" y2="472" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="880" y1="505" x2="880" y2="530" stroke="#4a5568" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="215" y1="660" x2="880" y2="586" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+  <line x1="475" y1="660" x2="880" y2="586" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+</svg>
