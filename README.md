@@ -1,6 +1,17 @@
-                                                                                      DevOps Tech Challenge
+                                                                      DevOps Tech Challenge
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
+
+Prerequisites.
+Basic understanding in:
+
+CI/CD: read here
+git
+GitHub Actions
+AWS EC2
+Docker
+Jenkins
+Terraform
 
 ## 📐 Architecture Overview
 
