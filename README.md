@@ -1,4 +1,4 @@
-                                                                  DevOps Tech Challenge
+                                                       DevOps Tech Challenge
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
