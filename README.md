@@ -92,7 +92,8 @@ Layer	Service	Details
 - IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
 - Observability	CloudWatch Logs	One log group per service
 - CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
-  
+
+```
 Repository structure
 .
 ├── backend/                        # Express API
@@ -113,6 +114,7 @@ Repository structure
 ├── .github/workflows/deploy.yaml   # CI/CD pipeline (gitops branch only)
 ├── keyscan.sh                      # Git history secret-scanning script
 └── README.md
+```
 Branch strategy
 Branch	Purpose
 main	Primary submission. Infrastructure via Terraform; CI/CD via a self-hosted Jenkins server on EC2.
