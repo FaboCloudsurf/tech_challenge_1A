@@ -17,7 +17,7 @@ Basic understanding in:
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
-![AWS](https://shields.io/badge)
+![AWS](https://img.shields.io/badge/AWS-%235835CC.svg?style=for-the-badge&logo=AWS&logoColor=white)
 
 
 ## 📐 Architecture Overview
