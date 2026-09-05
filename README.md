@@ -5,13 +5,7 @@ React + Express application deployed to AWS ECS Fargate, fully provisioned with 
 Prerequisites.
 Basic understanding in:
 
-CI/CD: read here
-git
-GitHub Actions
-AWS EC2
-Docker
-Jenkins
-Terraform
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
 ## 📐 Architecture Overview
 
