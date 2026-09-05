@@ -1,59 +1,217 @@
-# Overview
-This repository contains a React frontend, and an Express backend that the frontend connects to.
+                                                       DevOps Tech Challenge
 
-# Objective
-Deploy the frontend and backend to somewhere publicly accessible over the internet. The AWS Free Tier should be more than sufficient to run this project, but you may use any platform and tooling you'd like for your solution.
+React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
-Fork this repo as a base. You may change any code in this repository to suit the infrastructure you build in this code challenge.
+Prerequisites.
+Basic understanding in:
 
-# Submission
-1. A github repo that has been forked from this repo with all your code.
-2. Modify this README file with instructions for:
-* Any tools needed to deploy your infrastructure
-* All the steps needed to repeat your deployment process
-* URLs to the your deployed frontend.
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-%236DA55F.svg?style=for-the-badge&logo=node.js&logoColor=white)
+![Vim](https://img.shields.io/badge/VIM-%2311AB00.svg?style=for-the-badge&logo=vim&logoColor=white)
+![Bash Script](https://img.shields.io/badge/bash_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![YAML](https://img.shields.io/badge/yaml-%23ffffff.svg?style=for-the-badge&logo=yaml&logoColor=151515)
+![macOS](https://img.shields.io/badge/mac%20os-%23000000.svg?style=for-the-badge&logo=macos&logoColor=F0F0F0&logoSize=auto)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-%23E95420.svg?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
+![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-%235835CC.svg?style=for-the-badge&logo=AWS&logoColor=white)
 
-# Evaluation
-You will be evaluated on the ease to replicate your infrastructure. This is a combination of quality of the instructions, as well as any scripts to automate the overall setup process.
 
-# Setup your environment
-Install nodejs. Binaries and installers can be found on nodejs.org.
-https://nodejs.org/en/download/
+## 📐 Architecture Overview
 
-For macOS or Linux, Nodejs can usually be found in your preferred package manager.
-https://nodejs.org/en/download/package-manager/
+Below is the workflow showing how **Terraform** provisions resources inside **AWS** via **GitHub Actions**:
 
-Depending on the Linux distribution, the Node Package Manager `npm` may need to be installed separately.
+## 📋 Infrastructure Requirements
 
-# Running the project
-The backend and the frontend will need to run on separate processes. The backend should be started first.
+| Name | Version |
+| :--- | :--- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 6.0.0-beta2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0.0 |
+
+## 📥 Inputs
+
+| Name | Description | Type | Default | Required |
+| :--- | :--- | :--- | :--- | :---: |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The target AWS Region. | `string` | `"us-east-1"` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | Deployment stage (prod). | `string` | n/a | yes |
+
+
+
+### 🛠️ Tech Stack & Tools
+
+<p align="left">
+  <a href="https://aws.amazon.com/" target="_blank" rel="noreferrer">
+    <img src="https://skillicons.dev" alt="My Tech Stack" />
+  </a>
+</p>
+
+
+</div>
+Table of contents
+
+- Overview
+- Live environment
+- Architecture
+- Repository structure
+- Branch strategy
+- Prerequisites
+- Local development
+- Infrastructure deployment
+- CI/CD — Jenkins
+- CI/CD — GitHub Actions
+- Load testing & auto scaling validation
+- Issues found and fixed
+- Security
+- Submission
+- Overview
+
+
+This project provisions a complete, production-style AWS environment for a containerized React frontend and Express backend, then automates every step of building, testing, and deploying that environment through two independent, fully working CI/CD pipelines.
+
+All infrastructure — networking, load balancing, container orchestration, auto scaling, IAM, and the CI/CD servers themselves — is defined as code in Terraform. No resources were created manually through the AWS Console.
+
+Live environment
+http://devops-challenge-alb-1970167075.us-east-1.elb.amazonaws.com
+
+Infrastructure is stopped between demo sessions to control cost. If the link above isn't responding, the environment may need to be started — see Infrastructure deployment.
+
+Architecture
+
+
+Layer	Service	Details
+
+- Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
+- Networking	Internet Gateway / NAT Gateway	Public subnets reach the internet directly; private subnets route outbound traffic through NAT
+- Edge	Application Load Balancer	Routes / to the frontend target group, /api and /api/* to the backend target group
+- Compute	ECS Fargate	Two services, private subnets, no public IPs assigned
+- Compute	Frontend service	devops-challenge-frontend_service — React app via serve -s build, port 3000
+- Compute	Backend service	devops-challenge-backend-service — Express API, port 8080
+- Registry	ECR	Two repositories (frontend/backend), image scanning on push, retains 5 most recent tags
+- Scaling	Application Auto Scaling	Target tracking on CPU utilization, 50% threshold, min 1 / desired 1 / max 4 tasks
+- IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
+- Observability	CloudWatch Logs	One log group per service
+- CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
+
 ```
+Repository structure
+.
+├── backend/                        # Express API
+├── frontend/                       # React app
+├── terraform/                      # All infrastructure as code
+│   ├── vpc.tf
+│   ├── sg.tf
+│   ├── alb.tf
+│   ├── ecs.tf
+│   ├── ecr.tf
+│   ├── asg.tf                      # Auto scaling target + policy
+│   ├── jenkins.tf                  # Jenkins + Ansible control node EC2s
+│   ├── s3.tf                       # Remote state backend
+│   ├── outputs.tf
+│   ├── playbook.yaml               # Ansible playbook for Jenkins EC2 setup
+│   └── inventory.ini
+├── Jenkinsfile                     # CI/CD pipeline (main branch)
+├── .github/workflows/deploy.yaml   # CI/CD pipeline (gitops branch only)
+├── keyscan.sh                      # Git history secret-scanning script
+└── README.md
+```
+Branch strategy
+Branch	Purpose
+main	Primary submission. Infrastructure via Terraform; CI/CD via a self-hosted Jenkins server on EC2.
+gitops	Bonus, GitOps-style CI/CD using GitHub Actions instead of Jenkins.
+
+Both branches deploy to the same ECS cluster and services — there is a single live environment, and whichever pipeline ran most recently is what's currently deployed.
+
+Prerequisites
+AWS CLI configured with credentials that have ECS, ECR, EC2, VPC, and IAM permissions
+Terraform >= 1.x
+Docker
+Node.js 16 (matches the Docker base image; newer versions can trigger an OpenSSL/Webpack build error in the frontend)
+Local development
+bash
+# Backend
 cd backend
 npm ci
-npm start
-```
-The backend should response to a GET request on `localhost:8080`.
+npm start          # localhost:8080
 
-With the backend started, the frontend can be started.
-```
+# Frontend
 cd frontend
-npm ci
-npm start
-```
-The frontend can be accessed at `localhost:3000`. If the frontend successfully connects to the backend, a message saying "SUCCESS" followed by a guid should be displayed on the screen.  If the connection failed, an error message will be displayed on the screen.
+npm install
+npm start           # localhost:3000, calls localhost:8080
 
-# Configuration
-The frontend has a configuration file at `frontend/src/config.js` that defines the URL to call the backend. This URL is used on `frontend/src/App.js#12`, where the front end will make the GET call during the initial load of the page.
+Or containerized:
 
-The backend has a configuration file at `backend/config.js` that defines the host that the frontend will be calling from. This URL is used in the `Access-Control-Allow-Origin` CORS header, read in `backend/index.js#14`
+bash
+docker build -t backend-app ./backend
+docker run -p 8080:8080 backend-app
 
-# Optional Extras
-The core requirement for this challenge is to get the provided application up and running for consumption over the public internet. That being said, there are some opportunities in this code challenge to demonstrate your skill sets that are above and beyond the core requirement.
+docker build -t frontend-app ./frontend
+docker run -p 3000:3000 frontend-app
+Infrastructure deployment (Terraform)
+bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
 
-A few examples of extras for this coding challenge:
-1. Dockerizing the application
-2. Scripts to set up the infrastructure
-3. Providing a pipeline for the application deployment
-4. Running the application in a serverless environment
+This provisions the VPC, ALB, ECS cluster/services/task definitions, ECR repositories, IAM roles, Auto Scaling policies, and the Jenkins/Ansible EC2 instances.
 
-This is not an exhaustive list of extra features that could be added to this code challenge. At the end of the day, this section is for you to demonstrate any skills you want to show that’s not captured in the core requirement.
+Two lifecycle protections are in place and worth understanding before running terraform apply again:
+
+aws_ecs_service.frontend_ecs_service and .backend_ecs_service — lifecycle { ignore_changes = [task_definition] }. Both CI/CD pipelines register new task definition revisions directly via the AWS CLI, outside Terraform's knowledge. Without this, a routine terraform apply would silently roll each service back to whatever revision Terraform last recorded, undoing the latest deployment.
+aws_instance.jenkins_master and .ansible_master — lifecycle { ignore_changes = [ami] }. The AMI is resolved dynamically via a most_recent = true data source, which can return a different AMI ID as AWS publishes updates. Without this, that drift would force a full destroy-and-recreate of the Jenkins server on the next apply.
+CI/CD — Jenkins (main branch)
+
+Jenkins runs in a Docker container on an EC2 instance, provisioned via Terraform and configured with Ansible. The Jenkinsfile pipeline triggers on every push to main via a GitHub webhook:
+
+Checkout — pulls the latest code
+Build Docker images — builds frontend and backend images, tagged with the Jenkins build number
+Push to ECR — authenticates via aws ecr get-login-password, pushes both images
+Register new ECS task definitions — pulls the current task definition, swaps in the new image with jq, registers a new revision
+Update ECS services — triggers a rolling deployment to the new revision with zero downtime
+CI/CD — GitHub Actions (gitops branch, bonus)
+
+A parallel, GitOps-style pipeline (.github/workflows/deploy.yaml), triggered on every push to gitops. Functionally identical to the Jenkins pipeline (build → push → register → deploy), but runs on GitHub-hosted runners instead of a self-managed EC2 server, with credentials stored as encrypted GitHub Actions secrets rather than in a Jenkins credential store.
+
+Both pipelines were run end-to-end and independently verified via aws ecs describe-services, each producing a new, distinct task definition revision on the live cluster.
+
+Load testing & auto scaling validation
+
+Load tested with siege against the live frontend URL to confirm the CPU-based scaling policy actually triggers under load, not just that it's configured:
+
+bash
+siege -c 50 -t 3M http://devops-challenge-alb-1970167075.us-east-1.elb.amazonaws.com/
+Metric	Result
+Total requests	8,819
+Availability	99.93%
+Failed transactions	6
+Elapsed time	180.53s
+Concurrency	49.29
+
+The application remained responsive throughout, with no meaningful downtime.
+
+Scaling confirmed via AWS's own CloudWatch alarm history (ECS service Events tab), not just Terraform config:
+
+Scale-out: Successfully set desired count to 2 ... monitor alarm ...-AlarmHigh-... in state ALARM triggered policy devops-challenge-frontend-cpu-policy
+Scale-in (after load stopped): Successfully set desired count to 1 ... monitor alarm ...-AlarmLow-... in state ALARM triggered policy devops-challenge-frontend-cpu-policy
+
+Both are timestamped, AWS-generated audit log entries, confirming the full scale-out-then-scale-in lifecycle.
+
+Notable issues found and fixed during deployment
+Issue	Root cause	Fix
+API calls returned index.html instead of JSON	ALB listener rule matched /api/* only, which doesn't match a bare /api path	Broadened path_pattern.values to ["/api", "/api/*"]
+Frontend tasks stuck in a pull-failure crash loop	frontend_sg had no egress block, which strips Terraform's default allow-all-outbound rule	Added an explicit egress rule
+Frontend showed stale/wrong API URL after deploy	Create React App bakes REACT_APP_*/imported config values into the JS bundle at docker build time, not at container runtime	Updated frontend/src/config.js and rebuilt the image
+Security
+AWS credentials for both Jenkins and GitHub Actions are stored as encrypted secrets, never committed to the repository
+.gitignore excludes Terraform state files, .tfvars, and .env files
+Full git history (git log --all -p, across every branch) was scanned for exposed private keys and AWS access key IDs — none were found. The scan script (keyscan.sh) is included in the repo and can be re-run at any time with bash keyscan.sh
+Submission
+
+Repository access will be granted to the grader at the email address provided in the challenge instructions.
+
+<div align="center"> <sub>Screenshots (pipeline runs, live app, load test output) can be added under an <code>images/</code> folder and referenced with <code>![caption](images/filename.png)</code>.</sub> </div>
+
+Additional documentation: [Google Doc](https://docs.google.com/document/d/1VjDCsXEtrtNQHYYlGSio9_nhBBcFm0OKdU5FB1UOhEE/edit?tab=t.0)
