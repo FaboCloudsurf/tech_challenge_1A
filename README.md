@@ -80,17 +80,19 @@ Architecture
 
 
 Layer	Service	Details
-Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
-Networking	Internet Gateway / NAT Gateway	Public subnets reach the internet directly; private subnets route outbound traffic through NAT
-Edge	Application Load Balancer	Routes / to the frontend target group, /api and /api/* to the backend target group
-Compute	ECS Fargate	Two services, private subnets, no public IPs assigned
-Compute	Frontend service	devops-challenge-frontend_service — React app via serve -s build, port 3000
-Compute	Backend service	devops-challenge-backend-service — Express API, port 8080
-Registry	ECR	Two repositories (frontend/backend), image scanning on push, retains 5 most recent tags
-Scaling	Application Auto Scaling	Target tracking on CPU utilization, 50% threshold, min 1 / desired 1 / max 4 tasks
-IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
-Observability	CloudWatch Logs	One log group per service
-CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
+
+- Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
+- Networking	Internet Gateway / NAT Gateway	Public subnets reach the internet directly; private subnets route outbound traffic through NAT
+- Edge	Application Load Balancer	Routes / to the frontend target group, /api and /api/* to the backend target group
+- Compute	ECS Fargate	Two services, private subnets, no public IPs assigned
+- Compute	Frontend service	devops-challenge-frontend_service — React app via serve -s build, port 3000
+- Compute	Backend service	devops-challenge-backend-service — Express API, port 8080
+- Registry	ECR	Two repositories (frontend/backend), image scanning on push, retains 5 most recent tags
+- Scaling	Application Auto Scaling	Target tracking on CPU utilization, 50% threshold, min 1 / desired 1 / max 4 tasks
+- IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
+- Observability	CloudWatch Logs	One log group per service
+- CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
+  
 Repository structure
 .
 ├── backend/                        # Express API
