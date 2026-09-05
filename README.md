@@ -46,7 +46,7 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
   </a>
 </p>
 
-
+``
 </div>
 Table of contents
 Overview
@@ -64,6 +64,7 @@ Issues found and fixed
 Security
 Submission
 Overview
+``
 
 This project provisions a complete, production-style AWS environment for a containerized React frontend and Express backend, then automates every step of building, testing, and deploying that environment through two independent, fully working CI/CD pipelines.
 
