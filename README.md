@@ -49,21 +49,22 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
 
 </div>
 Table of contents
-Overview
-Live environment
-Architecture
-Repository structure
-Branch strategy
-Prerequisites
-Local development
-Infrastructure deployment
-CI/CD — Jenkins
-CI/CD — GitHub Actions
-Load testing & auto scaling validation
-Issues found and fixed
-Security
-Submission
-Overview
+
+- Overview
+- Live environment
+- Architecture
+- Repository structure
+- Branch strategy
+- Prerequisites
+- Local development
+- Infrastructure deployment
+- CI/CD — Jenkins
+- CI/CD — GitHub Actions
+- Load testing & auto scaling validation
+- Issues found and fixed
+- Security
+- Submission
+- Overview
 
 
 This project provisions a complete, production-style AWS environment for a containerized React frontend and Express backend, then automates every step of building, testing, and deploying that environment through two independent, fully working CI/CD pipelines.
