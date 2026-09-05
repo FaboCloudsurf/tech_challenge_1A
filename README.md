@@ -48,7 +48,7 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
 
 
 </div>
-Table of contents\
+Table of contents
 Overview
 Live environment
 Architecture
