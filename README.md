@@ -1,4 +1,4 @@
-                                                                      DevOps Tech Challenge
+```                                                                      DevOps Tech Challenge
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
@@ -46,7 +46,7 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
   </a>
 </p>
 
-```
+
 </div>
 Table of contents
 Overview
@@ -206,3 +206,4 @@ Submission
 Repository access will be granted to the grader at the email address provided in the challenge instructions.
 
 <div align="center"> <sub>Screenshots (pipeline runs, live app, load test output) can be added under an <code>images/</code> folder and referenced with <code>![caption](images/filename.png)</code>.</sub> </div>
+```
