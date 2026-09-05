@@ -26,7 +26,7 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
 
 | Name | Version |
 | :--- | :--- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 6.0.0-beta2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0.0 |
 
 ## 📥 Inputs
@@ -34,7 +34,7 @@ Below is the workflow showing how **Terraform** provisions resources inside **AW
 | Name | Description | Type | Default | Required |
 | :--- | :--- | :--- | :--- | :---: |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The target AWS Region. | `string` | `"us-east-1"` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Deployment stage (dev/prod). | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Deployment stage (prod). | `string` | n/a | yes |
 
 
 
