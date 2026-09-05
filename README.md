@@ -212,3 +212,4 @@ Repository access will be granted to the grader at the email address provided in
 
 <div align="center"> <sub>Screenshots (pipeline runs, live app, load test output) can be added under an <code>images/</code> folder and referenced with <code>![caption](images/filename.png)</code>.</sub> </div>
 
+Additional documentation: [Google Doc](https://docs.google.com/document/d/1VjDCsXEtrtNQHYYlGSio9_nhBBcFm0OKdU5FB1UOhEE/edit?tab=t.0)
