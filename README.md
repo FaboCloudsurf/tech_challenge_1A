@@ -1,26 +1,73 @@
-DevOps Tech Challenge
+                                                       DevOps Tech Challenge
 
 React + Express application deployed to AWS ECS Fargate, fully provisioned with Terraform, with dual CI/CD pipelines (Jenkins and GitHub Actions).
 
-Show Image Show Image Show Image Show Image Show Image
+Prerequisites.
+Basic understanding in:
+
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-%236DA55F.svg?style=for-the-badge&logo=node.js&logoColor=white)
+![Vim](https://img.shields.io/badge/VIM-%2311AB00.svg?style=for-the-badge&logo=vim&logoColor=white)
+![Bash Script](https://img.shields.io/badge/bash_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![YAML](https://img.shields.io/badge/yaml-%23ffffff.svg?style=for-the-badge&logo=yaml&logoColor=151515)
+![macOS](https://img.shields.io/badge/mac%20os-%23000000.svg?style=for-the-badge&logo=macos&logoColor=F0F0F0&logoSize=auto)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-%23E95420.svg?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
+![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-%235835CC.svg?style=for-the-badge&logo=AWS&logoColor=white)
+
+
+## 📐 Architecture Overview
+
+Below is the workflow showing how **Terraform** provisions resources inside **AWS** via **GitHub Actions**:
+
+## 📋 Infrastructure Requirements
+
+| Name | Version |
+| :--- | :--- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 6.0.0-beta2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0.0 |
+
+## 📥 Inputs
+
+| Name | Description | Type | Default | Required |
+| :--- | :--- | :--- | :--- | :---: |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The target AWS Region. | `string` | `"us-east-1"` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | Deployment stage (prod). | `string` | n/a | yes |
+
+
+
+### 🛠️ Tech Stack & Tools
+
+<p align="left">
+  <a href="https://aws.amazon.com/" target="_blank" rel="noreferrer">
+    <img src="https://skillicons.dev" alt="My Tech Stack" />
+  </a>
+</p>
+
 
 </div>
 Table of contents
-Overview
-Live environment
-Architecture
-Repository structure
-Branch strategy
-Prerequisites
-Local development
-Infrastructure deployment
-CI/CD — Jenkins
-CI/CD — GitHub Actions
-Load testing & auto scaling validation
-Issues found and fixed
-Security
-Submission
-Overview
+
+- Overview
+- Live environment
+- Architecture
+- Repository structure
+- Branch strategy
+- Prerequisites
+- Local development
+- Infrastructure deployment
+- CI/CD — Jenkins
+- CI/CD — GitHub Actions
+- Load testing & auto scaling validation
+- Issues found and fixed
+- Security
+- Submission
+- Overview
+
 
 This project provisions a complete, production-style AWS environment for a containerized React frontend and Express backend, then automates every step of building, testing, and deploying that environment through two independent, fully working CI/CD pipelines.
 
@@ -33,20 +80,22 @@ Infrastructure is stopped between demo sessions to control cost. If the link abo
 
 Architecture
 
-Show Image
 
 Layer	Service	Details
-Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
-Networking	Internet Gateway / NAT Gateway	Public subnets reach the internet directly; private subnets route outbound traffic through NAT
-Edge	Application Load Balancer	Routes / to the frontend target group, /api and /api/* to the backend target group
-Compute	ECS Fargate	Two services, private subnets, no public IPs assigned
-Compute	Frontend service	devops-challenge-frontend_service — React app via serve -s build, port 3000
-Compute	Backend service	devops-challenge-backend-service — Express API, port 8080
-Registry	ECR	Two repositories (frontend/backend), image scanning on push, retains 5 most recent tags
-Scaling	Application Auto Scaling	Target tracking on CPU utilization, 50% threshold, min 1 / desired 1 / max 4 tasks
-IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
-Observability	CloudWatch Logs	One log group per service
-CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
+
+- Networking	VPC	2 public + 2 private subnets across 2 Availability Zones
+- Networking	Internet Gateway / NAT Gateway	Public subnets reach the internet directly; private subnets route outbound traffic through NAT
+- Edge	Application Load Balancer	Routes / to the frontend target group, /api and /api/* to the backend target group
+- Compute	ECS Fargate	Two services, private subnets, no public IPs assigned
+- Compute	Frontend service	devops-challenge-frontend_service — React app via serve -s build, port 3000
+- Compute	Backend service	devops-challenge-backend-service — Express API, port 8080
+- Registry	ECR	Two repositories (frontend/backend), image scanning on push, retains 5 most recent tags
+- Scaling	Application Auto Scaling	Target tracking on CPU utilization, 50% threshold, min 1 / desired 1 / max 4 tasks
+- IAM	Task execution + task roles	Execution role pulls images and writes logs; task role scoped to app-level permissions
+- Observability	CloudWatch Logs	One log group per service
+- CI/CD infra	Jenkins on EC2	Self-managed, running in Docker, provisioned via Terraform + Ansible
+
+```
 Repository structure
 .
 ├── backend/                        # Express API
@@ -67,6 +116,7 @@ Repository structure
 ├── .github/workflows/deploy.yaml   # CI/CD pipeline (gitops branch only)
 ├── keyscan.sh                      # Git history secret-scanning script
 └── README.md
+```
 Branch strategy
 Branch	Purpose
 main	Primary submission. Infrastructure via Terraform; CI/CD via a self-hosted Jenkins server on EC2.
@@ -163,3 +213,5 @@ Submission
 Repository access will be granted to the grader at the email address provided in the challenge instructions.
 
 <div align="center"> <sub>Screenshots (pipeline runs, live app, load test output) can be added under an <code>images/</code> folder and referenced with <code>![caption](images/filename.png)</code>.</sub> </div>
+
+Additional documentation: [Google Doc](https://docs.google.com/document/d/1VjDCsXEtrtNQHYYlGSio9_nhBBcFm0OKdU5FB1UOhEE/edit?tab=t.0)
